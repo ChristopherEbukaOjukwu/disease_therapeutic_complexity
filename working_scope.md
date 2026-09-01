@@ -2,188 +2,203 @@
 
 ## Research Question
 
-**Is greater disease polygenicity associated with a larger and more diverse set of successful therapeutic interventions?**
+**Is greater disease polygenicity associated with a broader set of successful therapeutic targets and mechanisms?**
 
-> If a disease is influenced by many genetic variants, does successful treatment tend to involve
-> more distinct therapeutic targets or mechanisms — or do many genetic causes converge on a few
-> druggable processes?
+> If a disease is influenced by many genetic variants, does treatment also require many distinct molecular targets, or do those genetic effects converge on a smaller number of druggable biological processes?
 
 ## Motivation
 
-Complex diseases vary in genetic architecture: some are influenced by relatively few loci, others
-are highly polygenic, with risk distributed across many variants and biological processes. Diseases
-also differ in therapeutic landscape: some are treated through a few molecular targets, others
-through many.
+Complex diseases differ substantially in their genetic architecture. Some are influenced by relatively few loci, whereas others are highly polygenic, with genetic effects distributed across many variants and biological processes.
 
-It is often assumed that biologically complex diseases require mechanistically diverse treatment.
-It is unclear whether measured polygenicity actually tracks the therapeutic strategies that have
-succeeded in humans. This project tests that relationship directly across diseases.
+Successful treatments also differ in their biological breadth. Some diseases are treated through a small number of molecular targets, while others have approved therapies acting through many distinct targets and mechanisms.
 
-## Core Hypothesis (symmetric — both outcomes are informative)
+This project asks whether the distribution of genetic causation is reflected in the structure of successful therapeutic intervention.
 
-**More polygenic diseases will have a larger and more diverse set of successful therapeutic targets
-and mechanisms.**
+## Hypothesis
 
-The opposite result is equally informative: if highly polygenic diseases are treated through a small
-number of targets, complex genetic architectures may converge on a limited set of therapeutically
-actionable processes — **therapeutic bottlenecks**.
+**More polygenic diseases will have approved therapies acting through a larger number of distinct molecular targets and mechanisms.**
+
+An alternative outcome is equally informative: highly polygenic diseases may still be treatable through a small number of targets, suggesting that distributed genetic effects converge on **therapeutic bottlenecks**.
 
 ## Unit of Analysis
 
-The **disease/indication**. For each disease, combine a polygenicity estimate with a profile of
-successful therapeutic interventions.
+The unit of analysis is the **disease/indication**.
 
-| Disease | Polygenicity | GWAS N | Approved drugs | Unique targets | Distinct mechanisms |
-|---|--:|--:|--:|--:|--:|
-| Disease A | … | … | … | … | … |
-| Disease B | … | … | … | … | … |
+For each disease:
 
----
-
-## The load-bearing weakness: the polygenicity axis
-
-The x-axis is the fragile part of this study and must be treated as such, not as a settled input.
-
-- **Method disagreement.** Published polygenicity estimates (e.g. SBayesS-style effect-distribution
-  models, effective number of independently associated signals) disagree depending on method. Pick
-  **one** primary resource and one estimator, pre-commit to it, and treat alternatives as a
-  sensitivity analysis — do not silently mix estimates across methods.
-- **Power coupling.** Measured polygenicity rises with GWAS sample size almost mechanically: bigger
-  studies resolve more independent signals. Sample size tracks funding/attention, which tracks drug
-  count. So polygenicity and target-count share a common cause **through the measurement of
-  polygenicity itself**. This is why GWAS sample size is a mandatory covariate (below), not optional.
-- **Exclude non-disease traits.** Quantitative traits with no therapeutic target (height, BMI,
-  hair colour) must be dropped — they have no y-axis. Restrict to diseases/indications that can, in
-  principle, be drugged.
-
-### Kill-test (run before anything else)
-
-How many diseases have **both** a published polygenicity estimate **and** a populated approved-drug
-therapeutic profile after disease-ID harmonization? This intersection — likely tens, not hundreds —
-is the real sample size and caps the entire study's power. Size it first.
-
----
+| Disease   | EUR Polygenicity | GWAS N | Approved Drugs | Unique Targets | Distinct Mechanisms |
+| --------- | ---------------: | -----: | -------------: | -------------: | ------------------: |
+| Disease A |                … |      … |              … |              … |                   … |
+| Disease B |                … |      … |              … |              … |                   … |
 
 ## Genetic Exposure
 
-**Disease polygenicity**, continuous (never binarized). Drawn from one pre-specified published
-cross-disease resource. GWAS sample size for each disease recorded alongside it as a covariate.
+### Disease Polygenicity
+
+Use a continuous published estimate of polygenicity derived from European-ancestry GWAS.
+
+Use one primary polygenicity resource and estimator across diseases to maintain comparability.
+
+Record GWAS sample size and other relevant characteristics of the source GWAS because polygenicity estimates may be sensitive to statistical power.
 
 ## Therapeutic Outcomes
 
-### Primary outcome
+### Primary Outcome
 
-**Number of unique approved therapeutic targets per disease** (preferable to drug count, since
-multiple drugs may share a target).
+**Number of unique approved molecular targets per disease.**
 
-### Secondary outcomes
+The focus is on distinct genes/proteins targeted by approved drugs rather than simply the number of drugs.
 
-- Number of approved drugs.
-- Number of distinct mechanisms of action.
-- Diversity vs. concentration of therapeutic mechanisms.
+For example:
 
-Focus on **approved/successful** interventions, not all experimental programs.
+```text
+Drug A → TNF
+Drug B → TNF
+Drug C → IL6R
+Drug D → JAK1
 
-### Mechanism grain must be pre-committed
+4 drugs
+3 unique therapeutic targets
+```
 
-"Distinct mechanism" is not self-defining — whether two drugs count as the same or different depends
-on the grain: molecular target → mechanism-of-action string → pathway → therapeutic class. The grain
-chosen largely determines the answer. Therefore:
+### Secondary Outcomes
 
-- Pre-specify the primary grain (recommend **molecular target** for the primary outcome and
-  **mechanism-of-action class** for the mechanism-diversity secondary).
-- Report at least two grains; if the relationship holds at both, it is robust; if it flips, that is
-  itself the finding.
-- Treat the grain as a stated decision, not the database's default.
+* Number of approved drugs.
+* Number of distinct mechanisms of action.
+* Diversity or concentration of therapeutic mechanisms.
+
+The primary analysis will focus on approved therapies rather than experimental programs.
 
 ## Data Sources
 
 ### Polygenicity
-One pre-specified published resource (chosen at the kill-test stage). Record its disease labels and
-per-disease GWAS sample size.
 
-### Therapeutic data
-Open Targets / ChEMBL-type resources in the data catalog: `drug_mechanisms`, `drugs`,
-`clinical_targets_diseases`, `clinical_indications`, `targets` + `targets_pathways`/`targets_classes`
-for grain roll-up. These supply drug → target → mechanism → disease and clinical stage.
+A published cross-disease resource containing:
 
-### Disease-ID harmonization (not a formality)
-Polygenicity resources and Open Targets label diseases differently (ad hoc vs. EFO/MONDO). This
-mapping step is where diseases silently drop or double-count, and it directly shrinks the already
-small intersection. Harmonize to a single ontology (EFO/MONDO) and budget real time for it.
+* disease/trait;
+* European-ancestry polygenicity estimate;
+* GWAS sample size;
+* ideally uncertainty or standard error.
+
+### Therapeutic Data
+
+Open Targets / ChEMBL resources containing:
+
+```text
+disease → approved drug → molecular target → mechanism of action
+```
+
+Disease names and identifiers will be harmonized to a common ontology such as EFO or MONDO.
 
 ## Primary Analysis
+
+Test whether diseases with greater polygenicity have more unique approved therapeutic targets.
 
 ```text
 Unique approved targets ~ polygenicity + covariates
 ```
 
-Count outcome → negative-binomial regression (check for over-dispersion; consider zero-inflation if
-many diseases have zero approved targets). Report the polygenicity coefficient before and after
-adding covariates.
+Because the outcome is a count, Poisson or negative binomial regression will be evaluated based on the dispersion.
 
-## Covariates and Alternative Explanations
+The relationship should also be visualized directly, with each disease represented as one observation.
 
-- **GWAS sample size** — mandatory; the direct driver of measured polygenicity (see above).
-- Research/publication attention (publication or funding proxy per disease).
-- Number of drugs developed for the disease.
-- Years since first approved therapy (development runway).
-- Disease prevalence/burden, if available.
-- Therapeutic area.
+## Secondary Analysis
 
-Attention cannot be fully removed; the goal is to show the result is not *only* attention. Report the
-slope with and without controls, and lean on confound-resistant signals (below).
+Ask whether polygenicity is associated with **therapeutic diversity**, rather than simply therapeutic volume.
 
-### Oncology is a result, not just a covariate
+For example, two diseases may each have 20 approved drugs:
 
-Cancer has high target diversity, high measured polygenicity, and the most drugs — for reasons
-(somatic biology, market size) unrelated to the hypothesis. If a positive slope is just "oncology in
-the top-right and everything else clustered," there is no finding. **Show the relationship with
-oncology excluded** (or at minimum that it survives exclusion). This robustness check is
-credibility-critical.
+```text
+Disease A
+20 drugs → 3 targets
 
-### Confound-resistant reading
+Disease B
+20 drugs → 12 targets
+```
 
-- **Off-diagonal diseases** — polygenic but few mechanisms (bottleneck), or modest polygenicity but
-  many mechanisms — don't fit "more attention → more of both," so they carry the most weight.
-- **Shape over slope** — a plateau (mechanisms rising then flattening as polygenicity climbs) is hard
-  to explain by attention alone and is the signature of the bottleneck hypothesis.
+Disease B has a more distributed therapeutic architecture even though both diseases have the same number of drugs.
 
-## Secondary Question
+Mechanism-of-action diversity can provide an additional level of biological interpretation.
 
-**Does greater polygenicity correspond to greater diversity of therapeutic *mechanisms*, not merely
-more drugs?** Distinguishes many drugs through one pathway from many genuinely distinct mechanisms.
+## Key Considerations
+
+### GWAS Power
+
+Polygenicity estimates can depend on the size and power of the underlying GWAS. GWAS sample size should therefore be recorded and evaluated as a potential confounder.
+
+### Therapeutic Opportunity
+
+Some diseases have had much more time, funding, and research devoted to drug development.
+
+Potential controls include:
+
+* number of drugs developed;
+* research/publication attention;
+* years since first approved therapy;
+* disease prevalence or burden;
+* therapeutic area.
+
+### Disease Definition
+
+Disease mappings must be consistent between the polygenicity and therapeutic datasets.
+
+Broad ontology parents should not be allowed to double-count therapies belonging to their more specific disease subtypes.
+
+### Therapeutic Area
+
+The relationship should be tested with oncology excluded and through leave-one-therapeutic-area-out analyses to ensure that one disease class is not driving the overall result.
+
+## Feasibility Test
+
+Before building the full analysis:
+
+1. Select one published European polygenicity resource.
+2. Extract the diseases with usable estimates.
+3. Map those diseases to Open Targets / ChEMBL.
+4. Determine how many diseases have both:
+
+   * a reliable polygenicity estimate; and
+   * at least one approved therapy with a known molecular target.
+
+This intersection is the effective sample size of the study.
 
 ## Interpretation
 
-- **Positive association:** distributed genetic architecture has consequences for the structure of
-  successful intervention — more polygenic disease, broader mechanistic treatment.
-- **Little/no association (or plateau):** genetically complex diseases can be treated through few
-  targets → therapeutic bottlenecks where many perturbations converge and can be drugged.
+### Positive Association
 
-Either way:
+If more polygenic diseases have therapies acting through more targets and mechanisms:
 
-> **Does the complexity of genetic disease causation constrain the complexity of successful
-> therapeutic intervention?**
+> Distributed genetic causation may translate into distributed therapeutic intervention.
 
-Association only — no causal claim; residual confounding stated as an honest limitation.
+### Little or No Association
 
-## Initial Scope / Order of Work
+If highly polygenic diseases are successfully treated through relatively few targets:
 
-1. **Kill-test:** size the polygenicity × approved-drug intersection after harmonization.
-2. Pick and freeze the polygenicity resource + estimator; record GWAS N per disease.
-3. Harmonize disease IDs to EFO/MONDO.
-4. Build disease-level counts of approved targets and mechanisms at two pre-committed grains.
-5. Fit the primary target ~ polygenicity model with covariates (incl. GWAS N).
-6. Oncology-excluded robustness; off-diagonal and shape inspection.
-7. Mechanism-diversity secondary analysis.
+> Complex genetic causation may converge on a smaller set of biologically actionable therapeutic bottlenecks.
 
-### Out of scope
-Running new GWAS; estimating polygenicity from raw summary statistics; PPINs; LLM analysis; MCP
-development; ancestry analysis; predicting individual drug approval.
+The project therefore addresses a broader question:
+
+> **How does the architecture of genetic causation translate into the biology that medicine can successfully perturb?**
+
+## Initial Scope
+
+1. Identify and freeze one European polygenicity dataset.
+2. Harmonize diseases with therapeutic indications.
+3. Count approved drugs and unique molecular targets per disease.
+4. Test the polygenicity–target relationship.
+5. Adjust for major confounders.
+6. Evaluate mechanism diversity as a secondary analysis.
+7. Perform therapeutic-area robustness analyses.
+
+### Out of Scope
+
+* Running new GWAS.
+* Estimating polygenicity from raw GWAS data.
+* PPIN analysis.
+* Ancestry comparisons.
+* LLM or MCP analysis.
+* Predicting individual drug approval.
 
 ## One-Sentence Summary
 
-**Test whether diseases with more distributed genetic causation also require a broader set of
-therapeutic targets and mechanisms to treat successfully — or whether complex causation funnels
-through a few druggable bottlenecks.**
+**Test whether diseases with more distributed genetic causation are treated through a broader set of molecular targets, or whether many genetic effects converge on a small number of druggable biological bottlenecks.**
