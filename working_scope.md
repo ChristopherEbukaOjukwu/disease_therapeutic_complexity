@@ -1,4 +1,4 @@
-# Project 3: Disease Polygenicity and Therapeutic Diversity
+# Disease Polygenicity and Therapeutic Diversity
 
 ## Research Question
 
